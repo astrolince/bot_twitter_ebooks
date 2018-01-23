@@ -1,4 +1,4 @@
-require 'twitter_ebooks'
+require 'bot_twitter_ebooks'
 require_relative 'memprof'
 
 def path(relpath)

@@ -6,7 +6,7 @@ def Process.rss; `ps -o rss= -p #{Process.pid}`.chomp.to_i; end
 
 describe Ebooks::Model do
   describe 'making tweets' do
-    before(:all) { @model = Ebooks::Model.consume(path("data/0xabad1dea.json")) }
+    before(:all) { @model = Ebooks::Model.consume(path("data/elonmusk.json")) }
 
     it "generates a tweet" do
       s = @model.make_statement
@@ -26,11 +26,11 @@ describe Ebooks::Model do
     model = nil
 
     report = MemoryUsage.report do
-      model = Ebooks::Model.consume(path("data/0xabad1dea.json"))
+      model = Ebooks::Model.consume(path("data/elonmusk.json"))
     end
     expect(report.total_memsize).to be < 200000000
 
-    file = Tempfile.new("0xabad1dea")
+    file = Tempfile.new("elonmusk")
     model.save(file.path)
 
     report2 = MemoryUsage.report do
@@ -39,11 +39,11 @@ describe Ebooks::Model do
     expect(report2.total_memsize).to be < 4000000
 
     expect(model.tokens[0]).to be_a String
-    expect(model.sentences[0][0]).to be_a Fixnum
-    expect(model.mentions[0][0]).to be_a Fixnum
+    expect(model.sentences[0][0]).to be_a Integer
+    expect(model.mentions[0][0]).to be_a Integer
     expect(model.keywords[0]).to be_a String
 
-    puts "0xabad1dea.model uses #{report2.total_memsize} bytes in memory"
+    puts "elonmusk.model uses #{report2.total_memsize} bytes in memory"
   end
 
   describe '.consume' do

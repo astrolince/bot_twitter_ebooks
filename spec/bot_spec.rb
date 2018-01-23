@@ -106,7 +106,7 @@ describe Ebooks::Bot do
 
   it "responds to dms" do
     simulate(bot) do
-      bot.receive_event(mock_dm("m1sp", "this is a dm"))
+      bot.receive_event(mock_dm("astrolince", "this is a dm"))
       expect_direct_message(bot, "echo: this is a dm")
     end
   end
@@ -120,8 +120,8 @@ describe Ebooks::Bot do
 
   it "responds to mentions" do
     simulate(bot) do
-      bot.receive_event(mock_tweet("m1sp", "@test_ebooks this is a mention"))
-      expect_tweet(bot, "@m1sp echo: this is a mention")
+      bot.receive_event(mock_tweet("astrolince", "@test_ebooks this is a mention"))
+      expect_tweet(bot, "@astrolince echo: this is a mention")
     end
   end
 
@@ -129,14 +129,14 @@ describe Ebooks::Bot do
     simulate(bot) do
       expect(bot).to_not receive(:on_mention)
       expect(bot).to_not receive(:on_timeline)
-      bot.receive_event(mock_tweet("Test_Ebooks", "@m1sp i think that @test_ebooks is best bot"))
+      bot.receive_event(mock_tweet("Test_Ebooks", "@astrolince i think that @test_ebooks is best bot"))
     end
   end
 
   it "responds to timeline tweets" do
     simulate(bot) do
-      bot.receive_event(mock_tweet("m1sp", "some excellent tweet"))
-      expect_tweet(bot, "@m1sp fine tweet good sir")
+      bot.receive_event(mock_tweet("astrolince", "some excellent tweet"))
+      expect_tweet(bot, "@astrolince fine tweet good sir")
     end
   end
 
@@ -148,11 +148,11 @@ describe Ebooks::Bot do
   end
 
   it "links tweets to conversations correctly" do
-    tweet1 = mock_tweet("m1sp", "tweet 1", id: 1, in_reply_to_status_id: nil)
+    tweet1 = mock_tweet("astrolince", "tweet 1", id: 1, in_reply_to_status_id: nil)
 
-    tweet2 = mock_tweet("m1sp", "tweet 2", id: 2, in_reply_to_status_id: 1)
+    tweet2 = mock_tweet("astrolince", "tweet 2", id: 2, in_reply_to_status_id: 1)
 
-    tweet3 = mock_tweet("m1sp", "tweet 3", id: 3, in_reply_to_status_id: nil)
+    tweet3 = mock_tweet("astrolince", "tweet 3", id: 3, in_reply_to_status_id: nil)
 
     bot.conversation(tweet1).add(tweet1)
     expect(bot.conversation(tweet2)).to eq(bot.conversation(tweet1))
@@ -163,45 +163,45 @@ describe Ebooks::Bot do
 
   it "stops mentioning people after a certain limit" do
     simulate(bot) do
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 1"))
-      expect_tweet(bot, "@spammer @m1sp echo: 1")
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 1"))
+      expect_tweet(bot, "@spammer @astrolince echo: 1")
 
       Timecop.travel(Time.now + 60)
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 2"))
-      expect_tweet(bot, "@spammer @m1sp echo: 2")
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 2"))
+      expect_tweet(bot, "@spammer @astrolince echo: 2")
 
       Timecop.travel(Time.now + 60)
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 3"))
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 3"))
       expect_tweet(bot, "@spammer echo: 3")
     end
   end
 
   it "doesn't stop mentioning them if they reply" do
     simulate(bot) do
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 4"))
-      expect_tweet(bot, "@spammer @m1sp echo: 4")
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 4"))
+      expect_tweet(bot, "@spammer @astrolince echo: 4")
 
       Timecop.travel(Time.now + 60)
-      bot.receive_event(mock_tweet("m1sp", "@spammer @test_ebooks 5"))
-      expect_tweet(bot, "@m1sp @spammer echo: 5")
+      bot.receive_event(mock_tweet("astrolince", "@spammer @test_ebooks 5"))
+      expect_tweet(bot, "@astrolince @spammer echo: 5")
 
       Timecop.travel(Time.now + 60)
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 6"))
-      expect_tweet(bot, "@spammer @m1sp echo: 6")
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 6"))
+      expect_tweet(bot, "@spammer @astrolince echo: 6")
     end
   end
 
   it "doesn't get into infinite bot conversations" do
     simulate(bot) do
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 7"))
-      expect_tweet(bot, "@spammer @m1sp echo: 7")
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 7"))
+      expect_tweet(bot, "@spammer @astrolince echo: 7")
 
       Timecop.travel(Time.now + 2)
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 8"))
-      expect_tweet(bot, "@spammer @m1sp echo: 8")
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 8"))
+      expect_tweet(bot, "@spammer @astrolince echo: 8")
 
       Timecop.travel(Time.now + 2)
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 9"))
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 9"))
       expect(bot.twitter).to_not have_received(:update)
     end
   end
@@ -209,7 +209,7 @@ describe Ebooks::Bot do
   it "blocks blacklisted users on contact" do
     simulate(bot) do
       bot.blacklist = ["spammer"]
-      bot.receive_event(mock_tweet("spammer", "@test_ebooks @m1sp 7"))
+      bot.receive_event(mock_tweet("spammer", "@test_ebooks @astrolince 7"))
       expect(bot.twitter).to have_received(:block).with("spammer")
     end
   end

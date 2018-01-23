@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
-require 'twitter_ebooks'
+require 'bot_twitter_ebooks'
 require 'ostruct'
 require 'fileutils'
 
@@ -159,7 +159,7 @@ STR
       if path.split('.')[-1] == "csv" #from twitter archive
         csv_archive = CSV.read(path, :headers=>:first_row)
         tweets = csv_archive.map do |tweet|
-          { text: tweet['text'], id: tweet['tweet_id'] }
+          { text: tweet['text'], id: tweet['tweet_id'].to_i }
         end
       else
         File.read(path).split("\n").each do |l|

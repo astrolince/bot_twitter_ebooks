@@ -1,4 +1,4 @@
-require 'twitter_ebooks'
+require 'bot_twitter_ebooks'
 
 # This is an example bot definition with event handlers commented out
 # You can define and instantiate as many bots as you like
@@ -29,6 +29,7 @@ class MyBot < Ebooks::Bot
 
   def on_message(dm)
     # Reply to a DM
+    # Make sure to set your API permissions to "Read, Write and Access direct messages" or this won't work!
     # reply(dm, "secret secrets")
   end
 

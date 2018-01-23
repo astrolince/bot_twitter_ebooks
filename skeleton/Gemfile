@@ -1,4 +1,4 @@
 source 'http://rubygems.org'
 ruby '{{RUBY_VERSION}}'
 
-gem 'twitter_ebooks'
+gem 'bot_twitter_ebooks'

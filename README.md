@@ -1,10 +1,10 @@
-# twitter\_ebooks
+# bot_twitter_ebooks
 
-[![Gem Version](https://badge.fury.io/rb/twitter_ebooks.svg)](http://badge.fury.io/rb/twitter_ebooks)
-[![Build Status](https://travis-ci.org/mispy/twitter_ebooks.svg)](https://travis-ci.org/mispy/twitter_ebooks)
-[![Dependency Status](https://gemnasium.com/mispy/twitter_ebooks.svg)](https://gemnasium.com/mispy/twitter_ebooks)
+[![Gem Version](https://badge.fury.io/rb/bot_twitter_ebooks.svg)](http://badge.fury.io/rb/bot_twitter_ebooks)
+[![Build Status](https://travis-ci.org/astrolince/bot_twitter_ebooks.svg)](https://travis-ci.org/astrolince/bot_twitter_ebooks)
+[![Dependency Status](https://gemnasium.com/astrolince/bot_twitter_ebooks.svg)](https://gemnasium.com/astrolince/bot_twitter_ebooks)
 
-A framework for building interactive twitterbots which respond to mentions/DMs. See [ebooks_example](https://github.com/mispy/ebooks_example) for a fully-fledged bot definition.
+A framework for building interactive twitterbots which generate tweets based on pseudo-Markov texts models and respond to mentions/DMs/favs/rts. See [ebooks_example](https://github.com/astrolince/ebooks_example) for a fully-fledged bot definition.
 
 ## New in 3.0
 
@@ -15,16 +15,16 @@ A framework for building interactive twitterbots which respond to mentions/DMs. 
 - `ebooks console` starts a ruby interpreter with bots loaded (see Ebooks::Bot.all)
 - Replies are slightly rate-limited to prevent infinite bot convos
 - Non-participating users in a mention chain will be dropped after a few tweets
-- [API documentation](http://rdoc.info/github/mispy/twitter_ebooks) and tests
+- [API documentation](http://rdoc.info/github/astrolince/bot_twitter_ebooks) and tests
 
 Note that 3.0 is not backwards compatible with 2.x, so upgrade carefully! In particular, **make sure to regenerate your models** since the storage format changed.
 
 ## Installation
 
-Requires Ruby 2.1+. Ruby 2.3+ is recommended.
+Requires Ruby 2.4+.
 
 ```bash
-gem install twitter_ebooks
+gem install bot_twitter_ebooks
 ```
 
 ## Setting up a bot
@@ -40,8 +40,8 @@ class MyBot < Ebooks::Bot
   def configure
     # Consumer details come from registering an app at https://dev.twitter.com/
     # Once you have consumer details, use "ebooks auth" for new access tokens
-    self.consumer_key = "" # Your app consumer key
-    self.consumer_secret = "" # Your app consumer secret
+    self.consumer_key = '' # Your app consumer key
+    self.consumer_secret = '' # Your app consumer secret
 
     # Users to block instead of interacting with
     self.blacklist = ['tnietzschequote']
@@ -61,6 +61,7 @@ class MyBot < Ebooks::Bot
 
   def on_message(dm)
     # Reply to a DM
+    # Make sure to set your API permissions to "Read, Write and Access direct messages" or this won't work!
     # reply(dm, "secret secrets")
   end
 
@@ -71,12 +72,12 @@ class MyBot < Ebooks::Bot
 
   def on_mention(tweet)
     # Reply to a mention
-    # reply(tweet, meta(tweet).reply_prefix + "oh hullo")
+    # reply(tweet, "oh hullo")
   end
 
   def on_timeline(tweet)
     # Reply to a tweet in the bot's timeline
-    # reply(tweet, meta(tweet).reply_prefix + "nice tweet")
+    # reply(tweet, "nice tweet")
   end
 
   def on_favorite(user, tweet)
@@ -91,7 +92,7 @@ class MyBot < Ebooks::Bot
 end
 
 # Make a MyBot and attach it to an account
-MyBot.new("abby_ebooks") do |bot|
+MyBot.new("elonmusk_ebooks") do |bot|
   bot.access_token = "" # Token connecting the app to this account
   bot.access_token_secret = "" # Secret connecting the app to this account
 end
@@ -103,42 +104,46 @@ The underlying streaming and REST clients from the [twitter gem](https://github.
 
 ## Archiving accounts
 
-twitter\_ebooks comes with a syncing tool to download and then incrementally update a local json archive of a user's tweets (in this case, my good friend @0xabad1dea):
+bot_twitter_ebooks comes with a syncing tool to download and then incrementally update a local json archive of a user's tweets (in this case, my good friend @elonmusk):
 
 ``` zsh
-➜  ebooks archive 0xabad1dea corpus/0xabad1dea.json
-Currently 20209 tweets for 0xabad1dea
-Received 67 new tweets
+➜  ebooks archive elonmusk corpus/elonmusk.json
+Currently 2584 tweets for elonmusk
+Received 34 new tweets
 ```
 
 The first time you'll run this, it'll ask for auth details to connect with. Due to API limitations, for users with high numbers of tweets it may not be possible to get their entire history in the initial download. However, so long as you run it frequently enough you can maintain a perfect copy indefinitely into the future.
+
+If you have full access to the account you can request your full Twitter archive in web settings and convert the tweets.csv to .json with the command: `ebooks jsonify tweets.csv`
 
 ## Text models
 
 In order to use the included text modeling, you'll first need to preprocess your archive into a more efficient form:
 
 ``` zsh
-➜  ebooks consume corpus/0xabad1dea.json
-Reading json corpus from corpus/0xabad1dea.json
+➜  ebooks consume corpus/elonmusk.json
+Reading json corpus from corpus/elonmusk.json
 Removing commented lines and sorting mentions
 Segmenting text into sentences
-Tokenizing 7075 statements and 17947 mentions
+Tokenizing 987 statements and 1597 mentions
 Ranking keywords
-Corpus consumed to model/0xabad1dea.model
+Corpus consumed to model/elonmusk.model
 ```
 
 Notably, this works with both json tweet archives and plaintext files (based on file extension), so you can make a model out of any kind of text.
 
 Text files use newlines and full stops to seperate statements.
 
+You can also consume multiple archives / plaintext files into a single model using `ebooks consume-all <model_name> <corpus_paths>`.
+
 Once you have a model, the primary use is to produce statements and related responses to input, using a pseudo-Markov generator:
 
 ``` ruby
-> model = Ebooks::Model.load("model/0xabad1dea.model")
+> model = Ebooks::Model.load("model/elonmusk.model")
 > model.make_statement(140)
-=> "My Terrible Netbook may be the kind of person who buys Starbucks, but this Rackspace vuln is pretty straight up a backdoor"
-> model.make_response("The NSA is coming!", 130)
-=> "Hey - someone who claims to be an NSA conspiracy"
+=> "Rainbows, unicorns and LA and seems to be working on the Falcon fireball investigation."
+> model.make_response("Will you give free trips to Mars?", 130)
+=> "Plan is to provide something special that only existing owners can give to friends and it is limited to 5 people."
 ```
 
 The secondary function is the "interesting keywords" list. For example, I use this to determine whether a bot wants to fav/retweet/reply to something in its timeline:
@@ -154,4 +159,10 @@ end
 
 ## Bot niceness
 
-twitter_ebooks will drop bystanders from mentions for you and avoid infinite bot conversations, but it won't prevent you from doing a lot of other spammy things. Make sure your bot is a good and polite citizen!
+bot_twitter_ebooks will drop bystanders from mentions for you and avoid infinite bot conversations, but it won't prevent you from doing a lot of other spammy things. Make sure your bot is a good and polite citizen!
+
+## License
+
+bot_twitter_ebooks is [MIT licensed](https://github.com/astrolince/bot_twitter_ebooks/blob/master/LICENSE) and is a fork of [twitter_ebooks](https://github.com/mispy/twitter_ebooks).
+
+Thanks to Jaiden Mispy ([@mispy](https://github.com/mispy)) and all the human beings/bots/star stuff affected by universe entropy that contribute to the project.
