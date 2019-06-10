@@ -1,0 +1,12 @@
+{
+  "name": "ebooks_example",
+  "env": {
+    "ONE_ACCESS_TOKEN_KEY": "@twitter_access_token_key",
+    "ONE_ACCESS_TOKEN_SECRET": "@twitter_access_token_secret",
+    "ONE_NAME": "@bot_username",
+    "ONE_ORIGINAL": "@original_username",
+    "APP_CONSUMER_KEY": "@twitter_app_consumer_key",
+    "APP_CONSUMER_SECRET": "@twitter_app_consumer_secret",
+    "BOTS_NUMBER": "@number_of_bots"
+  }
+}

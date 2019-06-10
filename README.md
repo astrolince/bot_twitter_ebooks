@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/astrolince/bot_twitter_ebooks.svg)](https://travis-ci.org/astrolince/bot_twitter_ebooks)
 [![Dependency Status](https://gemnasium.com/astrolince/bot_twitter_ebooks.svg)](https://gemnasium.com/astrolince/bot_twitter_ebooks)
 
-A framework for building interactive twitterbots which generate tweets based on pseudo-Markov texts models and respond to mentions/DMs/favs/rts. See [ebooks_example](https://github.com/astrolince/ebooks_example) for a fully-fledged bot definition.
+A framework for building interactive twitterbots which generate tweets based on pseudo-Markov texts models and respond to mentions/DMs/favs/rts. See the [example](example/README.md) for a fully-fledged bot definition.
 
 ## New in 3.0
 
